@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>MDN Games: Three.js demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="C:\Users\Estudiante\Desktop\three.min.js"></script>
+
+    <script>
+        const scene = new THREE.Scene(); // Creación de una escena 3D
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); // Creación de cámara 3D con parámetros
+
+        const renderer = new THREE.WebGLRenderer(); // Creación de un renderizador
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1); // Definición de la geometría de un cubo
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Definición del material del cubo
+        const cube = new THREE.Mesh(geometry, material); // Creación del objeto cubo con su geometría y material
+        scene.add(cube); // Agregar el cubo a la escena
+
+        camera.position.z = 5; // Posición de la cámara
+
+        // Función animación
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotación del cubo en x, y
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        // Iniciar animación
+        animate();
+    </script>
+</body>
+
+</html>
