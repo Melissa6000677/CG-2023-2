@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js Escena Básica</title>
+    <style>
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+    <!-- Librería Three.js -->
+    <script src="three.min.js"></script>
+
+    <script>
+        // Variables para la escena, la cámara y el renderizador
+        var scene, camera, renderer;
+
+        // Inicializar la escena, la cámara y el renderizador
+        function init() {
+            // Crear una nueva escena
+            scene = new THREE.Scene();
+
+            // Crear una cámara y configurar su posición
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Crear un renderizador y configurar su tamaño
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Agregar el renderizador al documento HTML
+            document.body.appendChild(renderer.domElement);
+
+            // Crear un cubo con BoxGeometry
+            var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+            var cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            scene.add(cube);
+
+            // Crear una esfera con SphereGeometry
+            var sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+            var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.x = 2; // Mover la esfera a la derecha
+            scene.add(sphere);
+        }
+
+        // Función de animación
+        function animate() {
+            // Renderizar la escena
+            renderer.render(scene, camera);
+
+            // Llamada a la función animate() de forma recursiva
+            requestAnimationFrame(animate);
+        }
+
+        // Llamar a las funciones de inicialización y animación
+        init();
+        animate();
+    </script>
+</body>
+</html>
