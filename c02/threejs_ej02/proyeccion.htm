@@ -2,61 +2,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Three.js Escena Básica</title>
+    <title>Proyecciones en Three.js</title>
     <style>
         body { margin: 0; }
     </style>
 </head>
 <body>
-    <!-- Librería Three.js -->
-    <script src="three.min.js"></script>
+    <script src="three.min.js"></script> lib
+    <script src="MeshNormalMaterial.js"></script>
 
     <script>
-        // Variables para la escena, la cámara y el renderizador
-        var scene, camera, renderer;
 
-        // Inicializar la escena, la cámara y el renderizador
-        function init() {
-            // Crear una nueva escena
-            scene = new THREE.Scene();
+        // Variables
+        var escena, camara, renderizador;
+        var cubo, esfera;
+        var camara_ortografica, camara_perspectiva;
+        var isOrthographic = false;
 
-            // Crear una cámara y configurar su posición
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
-
-            // Crear un renderizador y configurar su tamaño
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            // Agregar el renderizador al documento HTML
-            document.body.appendChild(renderer.domElement);
-
-            // Crear un cubo con BoxGeometry
-            var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-            var cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-            scene.add(cube);
-
-            // Crear una esfera con SphereGeometry
-            var sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-            var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-            var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-            sphere.position.x = 2; // Mover la esfera a la derecha
-            scene.add(sphere);
-        }
-
-        // Función de animación
-        function animate() {
-            // Renderizar la escena
-            renderer.render(scene, camera);
-
-            // Llamada a la función animate() de forma recursiva
-            requestAnimationFrame(animate);
-        }
-
-        // Llamar a las funciones de inicialización y animación
-        init();
+        crear();
         animate();
+
+        function crear() {
+
+            // Configurar escena
+            escena = new THREE.Scene();
+
+            // Crear camara ortografica
+            const aspect = window.innerWidth / window.innerHeight;
+            camara_ortografica = new THREE.OrthographicCamera(-2 * aspect, 2 * aspect, 2, -2, 1, 10);
+            camara_ortografica.position.set(2, 2, 4);
+            camara_ortografica.lookAt(0, 0, 0);
+
+            camara_perspectiva = new THREE.PerspectiveCamera(75, aspect, 0.1, 10);
+            camara_perspectiva.position.set(2, 2, 4);
+            camara_perspectiva.lookAt(0, 0, 0);
+
+            // Crear renderizador
+            renderizador = new THREE.WebGLRenderer();
+            renderizador.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderizador.domElement);
+
+            // Crear cubo y esfera con MeshNormalMaterial
+            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const cubeMaterial = new THREE.MeshNormalMaterial();
+            cubo = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cubo.position.set(-1, 0, 0);
+            escena.add(cubo);
+
+            const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            const sphereMaterial = new THREE.MeshNormalMaterial();
+            esfera = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            esfera.position.set(1, 0, 0);
+            escena.add(esfera);
+
+            // Eventos de teclado
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'o' || event.key === 'O') {
+                    isOrthographic = true;
+                } else if (event.key === 'p' || event.key === 'P') {
+                    isOrthographic = false;
+                }
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Alternar entre cámaras
+            if (isOrthographic) {
+                renderizador.render(escena, camara_ortografica);
+            } else {
+                renderizador.render(escena, camara_perspectiva);
+            }
+        }
+
+        // Redimensionar la ventana
+        window.addEventListener('resize', () => {
+            const aspect = window.innerWidth / window.innerHeight;
+
+            camara_ortografica.left = -2 * aspect;
+            camara_ortografica.right = 2 * aspect;
+            camara_ortografica.top = 2;
+            camara_ortografica.bottom = -2;
+            camara_ortografica.updateProjectionMatrix();
+
+            camara_perspectiva.aspect = aspect;
+            camara_perspectiva.updateProjectionMatrix();
+
+            renderizador.setSize(window.innerWidth, window.innerHeight);
+        });
+
     </script>
 </body>
 </html>
