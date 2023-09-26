@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Cono con Textura UV Mapeada</title>
+</head>
+
+<body>
+    <script src="https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.js"></script>
+    <script>
+        // Configuración de la escena
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Variables para el cono
+        const radius = 1; // Radio del cono
+        const height = 2; // Altura del cono
+        const segments = 20; // Número de segmentos
+
+        const geometry = new THREE.Geometry();
+
+        // Vértice en la parte superior del cono
+        const topVertex = new THREE.Vector3(0, height / 2, 0);
+        geometry.vertices.push(topVertex);
+
+        // Vértices en la base del cono
+        for (let i = 0; i < segments; i++) {
+            const theta = (i / segments) * Math.PI * 2;
+            const x = radius * Math.cos(theta);
+            const z = radius * Math.sin(theta);
+            const vertex = new THREE.Vector3(x, -height / 2, z);
+            geometry.vertices.push(vertex);
+        }
+
+        // Coordenadas UV para la parte superior del cono
+        const uvTop = new THREE.Vector2(0.5, 0.5); // Centro de la textura
+        geometry.faceVertexUvs[0] = [];
+        for (let i = 1; i <= segments; i++) {
+            const u = (i / segments + 0.5) / 2; // Mapear de 0 a 1 con desplazamiento para centrar
+            const v = 1.0; // Valor constante para la parte superior
+            geometry.faceVertexUvs[0].push([uvTop, new THREE.Vector2(u, v), new THREE.Vector2((u + 1 / segments) / 2, v)]);
+        }
+
+        // Caras del cono
+        for (let i = 1; i <= segments; i++) {
+            const face = new THREE.Face3(i, 0, (i % segments) + 1);
+            geometry.faces.push(face);
+        }
+
+        // Carga de la textura
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load('https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/200px-Gay_Pride_Flag.svg.png');
+
+        // Material con textura
+        const material = new THREE.MeshBasicMaterial({ wireframe: false, side: THREE.DoubleSide, map: texture });
+
+        const customMesh = new THREE.Mesh(geometry, material);
+        scene.add(customMesh);
+
+        camera.position.set(0, 1, 5); // Posición de la cámara x, y, z
+
+        // Rotación del cono
+        function rotateCone() {
+            customMesh.rotation.x += 0.01; // Rotación en el eje X
+            customMesh.rotation.y += 0.01; // Rotación en el eje Y
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            rotateCone(); // Llama a la función de rotación
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
