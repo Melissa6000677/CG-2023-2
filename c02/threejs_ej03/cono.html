@@ -1,65 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<head>
+    <meta charset="UTF-8" />
+    <title>Creación de un Cono</title>
+</head>
+
 <body>
+    <script src="https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.js"></script>
+    <script>
+        // Configuración de la escena
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.11000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
+        // Variables para el cono
+        const radius = 2; // Radio del cono
+        const height = 3; // Altura del cono
+        const segments = 20; // Número de segmentos
+
+        const geometry = new THREE.Geometry();
+
+        // Vértice en la parte superior del cono
+        const topVertex = new THREE.Vector3(0, height, 0);
+        geometry.vertices.push(topVertex);
+
+        // Vértices en la base del cono
+        for (let i = 0; i <= segments; i++) {
+            const theta = (i / segments) * Math.PI * 2;
+            const x = radius * Math.cos(theta);
+            const z = radius * Math.sin(theta);
+            const vertex = new THREE.Vector3(x, 0, z);
+            geometry.vertices.push(vertex);
+        }
+
+        // Caras del cono
+        for (let i = 1; i <= segments; i++) {
+            const face = new THREE.Face3(i, 0, i % segments + 1);
+            geometry.faces.push(face);
+        }
+
+        geometry.computeFaceNormals();
+
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+        });
+
+        const customMesh = new THREE.Mesh(geometry, material);
+        scene.add(customMesh);
+
+        camera.position.set(0, 1, 5); // Posicion de la camara x,y,z
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
 </body>
-
-<script src="https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.js"></script>
-<script>
-    // Configuración de la escena
-    const scene = new THREE.Scene();
-    const camera = new
-        THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    const geometry = new THREE.Geometry();
-    // Definir los vértices del prisma
-    geometry.vertices.push(
-        new THREE.Vector3(-1, -1, -1),
-        new THREE.Vector3(1, -1, -1),
-        new THREE.Vector3(1, -1, 1),
-        new THREE.Vector3(-1, -1, 1),
-        new THREE.Vector3(-1, 1, -1),
-        new THREE.Vector3(1, 1, -1),
-        new THREE.Vector3(1, 1, 1),
-        new THREE.Vector3(-1, 1, 1)
-    );
-    // Definir las caras del prisma
-    geometry.faces.push(
-        new THREE.Face3(0, 1, 5),
-        new THREE.Face3(0, 5, 4),
-        new THREE.Face3(1, 2, 6),
-        new THREE.Face3(1, 6, 5),
-        new THREE.Face3(2, 3, 7),
-        new THREE.Face3(2, 7, 6),
-        new THREE.Face3(3, 0, 4),
-        new THREE.Face3(3, 4, 7),
-        new THREE.Face3(4, 5, 6),
-        new THREE.Face3(4, 6, 7),
-        new THREE.Face3(0, 3, 2),
-        new THREE.Face3(0, 2, 1)
-    );
-    // Calcular normales para las caras
-    geometry.computeFaceNormals();
-
-    const material = new THREE.MeshBasicMaterial({
-        color: 0x00ff00,
-        wireframe: true
-    });
-
-    const customMesh = new THREE.Mesh(geometry, material);
-    scene.add(customMesh);
-
-    camera.position.z = 5;
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-    animate();
-
-</script>
 
 </html>
