@@ -1,0 +1,5 @@
+1) El tubo se verá con una forma cilíndrica, muy delgada, se visualizará como un tubo y sin ninguna torsión o curvatura, cabe de aclarar que TubeGeometry si es un tubo, pero si la curvatura creada con CatmullRomCurve3 es recta entonces esta función lo tomara como tal.
+
+2) Cambiara la apariencia del tubo torcido, con esto podemos personalizarlo y hacer distintas formas, podemos engrosarlo o reducirlo y cambiarle el color y como lo percibimos, ya sea un estilo Toon o Lumbert.
+
+3) Si se puede añadir iluminación, de hecho, para el material de Toon se requiere de la luz para poder visualizar el tubo, la iluminación y sombreado hacen el objeto se vea más realista y tenga una apariencia 3D.
