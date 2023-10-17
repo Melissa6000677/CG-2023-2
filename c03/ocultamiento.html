@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Algoritmo Painter</title>
+  <style>
+    body { margin: 0; }
+  </style>
+</head>
+<body>
+  <script src="https://threejs.org/build/three.js"></script>
+
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Creación de objetos con MeshNormalMaterial
+    const material = new THREE.MeshNormalMaterial();
+
+    const coneGeometry = new THREE.ConeGeometry(2, 4, 32);
+    const cone = new THREE.Mesh(coneGeometry, material);
+    cone.position.set(-10, 0, 3);
+    scene.add(cone);
+
+    const cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+    const cube = new THREE.Mesh(cubeGeometry, material);
+    cube.position.set(0, 0, -25);
+    scene.add(cube);
+
+    const octahedronGeometry = new THREE.OctahedronGeometry(2);
+    const octahedron = new THREE.Mesh(octahedronGeometry, material);
+    octahedron.position.set(10, 0, 0);
+    scene.add(octahedron);
+
+    // Configuración de la cámara
+    camera.position.z = 15;
+
+    // Función de animación con rotación
+    const animate = () => {
+      requestAnimationFrame(animate);
+
+      // Rotación de los objetos
+      cone.rotation.x += 0.01;
+      cone.rotation.y += 0.01;
+
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+
+      octahedron.rotation.x += 0.01;
+      octahedron.rotation.y += 0.01;
+
+      renderer.clear();
+
+      // Ordenar manualmente los objetos en función de la profundidad Z
+      const objectsToRender = [cone, cube, octahedron];
+      objectsToRender.sort((a, b) => a.position.z - b.position.z);
+
+      for (const object of objectsToRender) {
+        renderer.render(scene, camera);
+      }
+    };
+
+    animate();
+  </script>
+</body>
+</html>
