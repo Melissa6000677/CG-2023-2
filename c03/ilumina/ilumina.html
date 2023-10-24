@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js Cilindro con Cabeza</title>
+    <style>
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Configuración básica de Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Crea el cilindro
+        const geometry = new THREE.CylinderGeometry(1, 1, 5, 32);
+        const material = new THREE.MeshPhongMaterial({ color: 0xFF0000 });
+        const cilindro = new THREE.Mesh(geometry, material);
+        scene.add(cilindro);
+
+        // Crea la "cabeza" en la parte superior del cilindro
+        const cabezaGeometry = new THREE.SphereGeometry(1.2, 32, 32);
+        const cabeza = new THREE.Mesh(cabezaGeometry, material);
+        cabeza.position.set(0, 1.9, 0);
+        scene.add(cabeza);
+
+        // Configuración de la cámara
+        camera.position.z = 8;
+
+        // Agrega una fuente de luz para el material Phong
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(2, 2, 2);
+        scene.add(light);
+
+        // Velocidades de rotación
+        const rotationSpeed = 0.005;
+
+        // Función de animación
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            // Rota el cilindro y la cabeza en la misma dirección (de izquierda a derecha)
+            cilindro.rotation.y += rotationSpeed;
+            cabeza.rotation.y += rotationSpeed;
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+    </script>
+</body>
+</html>
+
