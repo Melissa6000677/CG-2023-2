@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Three.js Cilindro con Cabeza</title>
+    <title>Three.js Cilindro con Cabeza, Cola y Patas</title>
     <style>
         body { margin: 0; }
     </style>
@@ -17,36 +17,98 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        // Variables para el control de la cámara
+        const cameraRotationSpeed = 1;
+        const cameraRotationDelta = Math.PI / 180;
+        const cameraMovementSpeed = 1;
+
+        // Crea un grupo para el cilindro, la cabeza, la cola y las patas
+        const objetoGrupo = new THREE.Group();
+        
         // Crea el cilindro
-        const geometry = new THREE.CylinderGeometry(1, 1, 5, 32);
+        const geometry = new THREE.CylinderGeometry(1.22, 1.22, 3, 32);
         const material = new THREE.MeshPhongMaterial({ color: 0xFF0000 });
         const cilindro = new THREE.Mesh(geometry, material);
-        scene.add(cilindro);
+        objetoGrupo.add(cilindro);
 
         // Crea la "cabeza" en la parte superior del cilindro
-        const cabezaGeometry = new THREE.SphereGeometry(1.2, 32, 32);
+        const cabezaGeometry = new THREE.SphereGeometry(1.22, 32, 32);
         const cabeza = new THREE.Mesh(cabezaGeometry, material);
-        cabeza.position.set(0, 1.9, 0);
-        scene.add(cabeza);
+        cabeza.position.set(0, 1.5, 0);
+        objetoGrupo.add(cabeza);
+
+        // Crea la "cola" en la parte superior del cilindro y aplástala
+        const colaGeometry = new THREE.SphereGeometry(1.22, 32, 32);
+        const cola = new THREE.Mesh(cabezaGeometry, material);
+        cola.position.set(0, -1.5, 0);
+        cola.scale.set(1, 0.5, 1); // Escalamos en Y para aplastarla
+        objetoGrupo.add(cola);
+        
+        // Crea un rectángulo rojo vertical pegado al cilindro y fusionado
+        const rectanguloGeometry = new THREE.BoxGeometry(1, 2.5, 1);
+        const rectangulo = new THREE.Mesh(rectanguloGeometry, material);
+        rectangulo.position.set(1.5, 0.5, 0);
+        objetoGrupo.add(rectangulo);
+
+        // Agrega el grupo a la escena
+        scene.add(objetoGrupo);
+
+        // Crea las patas cilíndricas
+        const pataGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1, 16);
+        const pata1 = new THREE.Mesh(pataGeometry, material);
+        pata1.position.set(-1, -2.0, 0);
+        objetoGrupo.add(pata1);
+
+        const pata2 = new THREE.Mesh(pataGeometry, material);
+        pata2.position.set(1, -2.0, 0);
+        objetoGrupo.add(pata2);
 
         // Configuración de la cámara
         camera.position.z = 8;
+        camera.position.y = 2;
 
-        // Agrega una fuente de luz para el material Phong
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(2, 2, 2);
-        scene.add(light);
+        // Agrega una fuente de luz direccional
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(2, 2, 2);
+        scene.add(directionalLight);ddd
 
-        // Velocidades de rotación
-        const rotationSpeed = 0.005;
+        // Agrega una luz ambiental
+        const ambientLight = new THREE.AmbientLight(0x404040); // Color gris oscuro
+        scene.add(ambientLight);
+
+        // Evento de teclado para controlar la cámara y la rotación del grupo
+        const onKeyDown = (event) => {
+            const code = event.code;
+            switch (code) {
+                case 'ArrowLeft':
+                    camera.rotation.y += cameraRotationDelta;
+                    break;
+                case 'ArrowRight':
+                    camera.rotation.y -= cameraRotationDelta;
+                    break;
+                case 'KeyW':
+                    camera.position.z -= cameraMovementSpeed;
+                    break;
+                case 'KeyS':
+                    camera.position.z += cameraMovementSpeed;
+                    break;
+                case 'KeyA':
+                    objetoGrupo.rotation.y += cameraRotationDelta; // Rotación del grupo hacia la izquierda
+                    break;
+                case 'KeyD':
+                    objetoGrupo.rotation.y -= cameraRotationDelta; // Rotación del grupo hacia la derecha
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', onKeyDown);
 
         // Función de animación
         const animate = () => {
             requestAnimationFrame(animate);
 
-            // Rota el cilindro y la cabeza en la misma dirección (de izquierda a derecha)
-            cilindro.rotation.y += rotationSpeed;
-            cabeza.rotation.y += rotationSpeed;
+            // Actualiza la cámara
+            camera.lookAt(objetoGrupo.position);
 
             renderer.render(scene, camera);
         };
@@ -55,4 +117,3 @@
     </script>
 </body>
 </html>
-
