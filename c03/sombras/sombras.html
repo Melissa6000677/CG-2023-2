@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Esferas con diferentes sombras y materiales</title>
+    
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Crear una escena
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x222222);
+
+        // Crear una cámara
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 10);
+
+        // Crear un renderizador
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // Crear una luz direccional
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(2, 2, 5);
+        light.castShadow = true;
+        light.shadow.camera.right = 5;
+        light.shadow.camera.left = -5;
+        scene.add(light);
+
+        // Definir los shader para el ShaderMaterial
+        const customVertexShader = `
+            void main() {
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+
+        const customFragmentShader = `
+            void main() {
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Color rojo sólido
+            }
+        `;
+
+        // Crear el ShaderMaterial para la primera esfera
+        const customMaterial = new THREE.ShaderMaterial({
+            vertexShader: customVertexShader,
+            fragmentShader: customFragmentShader
+        });
+
+        // Crear una esfera con ShaderMaterial personalizado
+        const sphereShader = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), customMaterial);
+        sphereShader.position.set(-5, 0.5, 0);
+        sphereShader.castShadow = true;
+        scene.add(sphereShader);
+
+        // Función para crear esferas con diferentes materiales para comparación
+        const createSphere = (materialType, position) => {
+            let material;
+
+            switch (materialType) {
+                case 'Lambert':
+                    material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+                    break;
+                case 'Phong':
+                    material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+                    break;
+            }
+
+            const newSphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
+            newSphere.position.copy(position);
+            newSphere.castShadow = true;
+            scene.add(newSphere);
+        };
+
+        // Crear esferas con materiales predefinidos para comparación
+        createSphere('Lambert', new THREE.Vector3(-2.5, 0.5, 0));
+        createSphere('Phong', new THREE.Vector3(2.5, 0.5, 0));
+
+        // Crear una esfera con MeshPhongMaterial
+        const spherePhong = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), new THREE.MeshPhongMaterial({ color: 0xff0000 }));
+        spherePhong.position.set(5, 0.5, 0);
+        spherePhong.castShadow = true;
+        scene.add(spherePhong);
+
+        // Crear un suelo
+        const groundGeometry = new THREE.PlaneGeometry(20, 20);
+        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = 0;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Función para animar la escena
+        const animate = () => {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        };
+
+        // Iniciar la animación
+        animate();
+    </script>
+</body>
+</html>
